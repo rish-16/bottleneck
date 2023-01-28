@@ -14,6 +14,7 @@ class Experiment():
     def __init__(self, args):
         self.task = args.task
         gnn_type = args.type
+        self.gnn_type = args.type
         self.depth = args.depth
         num_layers = self.depth if args.num_layers is None else args.num_layers
         self.dim = args.dim
