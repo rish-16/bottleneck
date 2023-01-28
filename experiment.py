@@ -6,7 +6,7 @@ import numpy as np
 import random
 from attrdict import AttrDict
 
-from common import STOP
+from common import STOP, GNN_TYPE
 from models.graph_model import GraphModel
 
 
