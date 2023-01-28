@@ -19,7 +19,7 @@ class GraphTransformer(nn.Module):
                         nn.Linear(hidden, classes),
                     ])
 
-        self.tf = nn.MultiheadAttention(in_dim, heads) # 147, 128
+        self.tf = nn.MultiheadAttention(in_dim, heads, batch_first=True) # 147, 128
         self.project = nn.Linear(in_dim, classes)
 
     def forward(self, x, edge_index):
