@@ -9,7 +9,7 @@ import torch_geometric.nn as tgnn
 from torch_geometric.nn import GCNConv, GatedGraphConv, GINConv, GATConv
 
 class GraphTransformer(nn.Module):
-    def __init__(self, in_dim, hidden, heads, classes):
+    def __init__(self, in_dim, hidden, classes, heads=4):
         super().__init__()
         self.gnn = tgnn.Sequential('x, edge_index', [
                         (GCNConv(in_dim, hidden), 'x, edge_index -> x'),

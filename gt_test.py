@@ -29,12 +29,12 @@ class GraphTransformer(nn.Module):
 
         return out
 
-x = torch.rand(147, 128)
+x = torch.rand(1, 147, 128)
 edge_index = torch.randint(0, 147, [2, 70])
 edge_index = tg.utils.to_undirected(edge_index)
-gt = GraphTransformer(128, 64, 4, classes=8)
+gt = GraphTransformer(128, 64, classes=8, heads=4)
 y = gt(x, edge_index)
 
-print (summary(gt))
+summary(gt)
 print (x.shape, edge_index.shape)
 print (y.shape)

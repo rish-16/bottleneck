@@ -76,6 +76,7 @@ class Experiment():
             optimizer.zero_grad()
             for i, batch in enumerate(loader):
                 batch = batch.to(self.device)
+                print ("BATCH: ", batch)
                 out = self.model(batch)
                 loss = self.criterion(input=out, target=batch.y)
                 total_num_examples += batch.num_graphs
