@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
-
+from common import GNN_TYPE
 
 class GraphModel(torch.nn.Module):
     def __init__(self, gnn_type, num_layers, dim0, h_dim, out_dim, last_layer_fully_adjacent,
@@ -44,6 +44,10 @@ class GraphModel(torch.nn.Module):
         x_key_embed = self.layer0_keys(x_key)
         x_val_embed = self.layer0_values(x_val)
         x = x_key_embed + x_val_embed
+
+        if self.gnn_type == GNN_TYPE.GT:
+            x = x.unsqueeze(0)
+            print (x.size())
 
         for i in range(self.num_layers):
             if self.unroll:

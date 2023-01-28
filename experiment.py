@@ -77,11 +77,11 @@ class Experiment():
             optimizer.zero_grad()
             for i, batch in enumerate(loader):
                 batch = batch.to(self.device)
-                if self.gnn_type == GNN_TYPE.GT:
-                    print ("BATCH: ", batch)
-                    print (batch.x.size())
-                    batch.x = batch.x.unsqueeze(0)
-                    print (batch.x.size())
+                # if self.gnn_type == GNN_TYPE.GT:
+                #     print ("BATCH: ", batch)
+                #     print (batch.x.size())
+                #     batch.x = batch.x.unsqueeze(0)
+                #     print (batch.x.size())
 
                 out = self.model(batch)
                 loss = self.criterion(input=out, target=batch.y)
