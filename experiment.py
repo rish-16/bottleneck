@@ -1,14 +1,18 @@
 import torch
+from pprint import pprint
 from torch_geometric.data import DataLoader
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 import numpy as np
 import random
 from attrdict import AttrDict
+import networkx as nx
+import matplotlib.pyplot as plt
 
+import torch_geometric as tg
 from common import STOP, GNN_TYPE
 from models.graph_model import GraphModel
-
+from utils import dirichlet_energy
 
 class Experiment():
     def __init__(self, args):
@@ -45,7 +49,7 @@ class Experiment():
                                 ).to(self.device)
 
         print(f'Starting experiment')
-        self.print_args(args)
+        # self.print_args(args)
         print(f'Training examples: {len(self.X_train)}, test examples: {len(self.X_test)}')
 
     def print_args(self, args):
@@ -77,11 +81,6 @@ class Experiment():
             optimizer.zero_grad()
             for i, batch in enumerate(loader):
                 batch = batch.to(self.device)
-                # if self.gnn_type == GNN_TYPE.GT:
-                #     print ("BATCH: ", batch)
-                #     print (batch.x.size())
-                #     batch.x = batch.x.unsqueeze(0)
-                #     print (batch.x.size())
 
                 out = self.model(batch)
                 loss = self.criterion(input=out, target=batch.y)
@@ -136,7 +135,24 @@ class Experiment():
                 break
         print(f'Best train acc: {best_train_acc}, epoch: {best_epoch * self.eval_every}')
 
+        self.analysis(self.model)
+
         return best_train_acc, best_test_acc, best_epoch
+
+    def analysis(self, model, train=True):
+        idx = 50
+        sample = self.X_train[idx] if train else self.X_test[idx]
+        sample_nx = tg.utils.to_networkx(sample)
+        print (sample_nx)
+
+        yhat, energies = model(sample, dirifunc=dirichlet_energy)
+        print ("yhat", yhat.shape)
+        pprint (energies)
+
+        print (yhat.argmax(), sample.y)
+
+        nx.draw_networkx(sample_nx)
+        plt.show()
 
     def eval(self):
         self.model.eval()

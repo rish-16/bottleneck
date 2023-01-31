@@ -7,6 +7,7 @@ from torch import nn
 import torch_geometric as tg
 import torch_geometric.nn as tgnn
 from torch_geometric.nn import GCNConv, GatedGraphConv, GINConv, GATConv
+from my_gat import myGAT
 
 class GraphTransformer(nn.Module):
     def __init__(self, in_dim, hidden, classes, heads=4):
@@ -79,7 +80,8 @@ class GNN_TYPE(Enum):
             # 4-heads, although the paper by Velickovic et al. had used 6-8 heads.
             # The output will be the concatenation of the heads, yielding a vector of size out_dim
             num_heads = 4
-            return GATConv(in_dim, out_dim // num_heads, heads=num_heads)
+            return myGAT(in_channels=in_dim, out_channels=out_dim, heads=num_heads)
+            # return GATConv(in_dim, out_dim // num_heads, heads=num_heads)
         elif self is GNN_TYPE.GT:
             return GraphTransformer(in_dim, hidden=32, heads=4, classes=out_dim)
 

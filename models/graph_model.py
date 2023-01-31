@@ -37,17 +37,14 @@ class GraphModel(torch.nn.Module):
         # self.out_layer = nn.Linear(in_features=h_dim, out_features=out_dim, bias=False)
         self.out_layer = nn.Linear(in_features=h_dim, out_features=out_dim + 1, bias=False)
 
-    def forward(self, data):
+    def forward(self, data, dirifunc=None):
         x, edge_index, batch, roots = data.x, data.edge_index, data.batch, data.root_mask
+        energy_per_layer = []
 
         x_key, x_val = x[:, 0], x[:, 1]
         x_key_embed = self.layer0_keys(x_key)
         x_val_embed = self.layer0_values(x_val)
         x = x_key_embed + x_val_embed
-
-        if self.gnn_type == GNN_TYPE.GT:
-            x = x.unsqueeze(0)
-            print (x.size())
 
         for i in range(self.num_layers):
             if self.unroll:
@@ -55,6 +52,11 @@ class GraphModel(torch.nn.Module):
             else:
                 layer = self.layers[i]
             new_x = x
+
+            if dirifunc:
+                energy = dirifunc(new_x, edge_index).detach()
+                energy_per_layer.append([i, energy])
+
             if self.last_layer_fully_adjacent and i == self.num_layers - 1:
                 root_indices = torch.nonzero(roots, as_tuple=False).squeeze(-1)
                 target_roots = root_indices.index_select(dim=0, index=batch)
@@ -76,4 +78,8 @@ class GraphModel(torch.nn.Module):
         root_nodes = x[roots]
         logits = self.out_layer(root_nodes)
         # logits = F.linear(root_nodes, self.layer0_values.weight)
-        return logits
+
+        if dirifunc:
+            return logits, energy_per_layer
+        else:
+            return logits
